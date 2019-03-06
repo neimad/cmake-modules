@@ -21,7 +21,7 @@ TargetModules
 
 This module allows to declare required modules using the
 :command:`require_module` command and define modules required by a target using
-the :command:`target_require_modules` command.
+the :command:`target_required_modules` command.
 
 The implementation rely on the availability of the ``pkg-config`` tool.
 #]=======================================================================]
@@ -58,18 +58,18 @@ function(require_module module)
 endfunction()
 
 #[=======================================================================[.rst:
-.. command:: target_require_modules
+.. command:: target_required_modules
 
   Specify include directories, compile options and link flags needed to compile
   and link the ``target`` using the specified modules. ::
 
-    target_require_modules(<target> MODULES <module> [<module>...])
+    target_required_modules(<target> MODULES <module> [<module>...])
 
   When specifying the ``module``, no version specification is allowed as it
   needs to be done using :command:`require_module`.
 
 #]=======================================================================]
-function(target_require_modules target)
+function(target_required_modules target)
   cmake_parse_arguments(PARSE_ARGV 0 ""
     ""
     ""
