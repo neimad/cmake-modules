@@ -77,6 +77,14 @@ function(target_require_modules target)
   )
 
   foreach(module ${_MODULES})
+    if(NOT DEFINED _TargetModules_${module}_FOUND)
+      message(FATAL_ERROR "The module `${module}` has not been required.")
+    endif()
+
+    if(NOT _TargetModules_${module}_FOUND)
+      message(FATAL_ERROR "The module `${module}` has not been found.")
+    endif()
+
     target_include_directories(${target} PUBLIC ${_TargetModules_${module}_INCLUDE_DIRS})
     target_compile_options(${target} PUBLIC ${_TargetModules_${module}_CFLAGS})
     target_link_libraries(${target} ${_TargetModules_${module}_LIBRARIES})
