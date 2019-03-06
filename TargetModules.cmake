@@ -76,6 +76,10 @@ function(target_required_modules target)
     "MODULES"
   )
 
+  if(NOT _MODULES)
+    message(FATAL_ERROR "The required MODULES must be specified.")
+  endif()
+
   foreach(module ${_MODULES})
     if(NOT DEFINED _TargetModules_${module}_FOUND)
       message(FATAL_ERROR "The module `${module}` has not been required.")
