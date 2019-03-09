@@ -50,7 +50,9 @@ endfunction()
   Specify include directories, compile options and link flags needed to compile
   and link the ``target`` using the specified modules. ::
 
-    target_required_modules(<target> MODULES <module> [<module>...])
+    target_required_modules(<target>
+                            <INTERFACE|PUBLIC|PRIVATE> <module> [module...]
+                            [<INTERFACE|PUBLIC|PRIVATE> <module> [module...] ...])
 
   When specifying the ``module``, no version specification is allowed as it
   needs to be done using :command:`require_module`.
@@ -60,24 +62,27 @@ function(target_required_modules target)
   cmake_parse_arguments(PARSE_ARGV 0 ""
     ""
     ""
-    "MODULES"
+    "INTERFACE;PUBLIC;PRIVATE"
   )
 
-  if(NOT _MODULES)
-    message(FATAL_ERROR "The required MODULES must be specified.")
+  if(NOT(_INTERFACE OR _PUBLIC OR _PRIVATE))
+    message(FATAL_ERROR "The required modules must be specified.")
   endif()
 
-  foreach(module ${_MODULES})
-    if(NOT DEFINED _TargetModules_${module}_FOUND)
-      message(FATAL_ERROR "The module `${module}` has not been required.")
-    endif()
+  foreach(scope INTERFACE PUBLIC PRIVATE)
+    foreach(module ${_${scope}})
+      if(NOT DEFINED _TargetModules_${module}_FOUND)
+        message(FATAL_ERROR "The module `${module}` has not been required.")
+      endif()
 
-    if(NOT _TargetModules_${module}_FOUND)
-      message(FATAL_ERROR "The module `${module}` has not been found.")
-    endif()
+      if(NOT _TargetModules_${module}_FOUND)
+        message(FATAL_ERROR "The module `${module}` has not been found.")
+      endif()
 
-    target_include_directories(${target} PUBLIC ${_TargetModules_${module}_INCLUDE_DIRS})
-    target_compile_options(${target} PUBLIC ${_TargetModules_${module}_CFLAGS})
-    target_link_libraries(${target} ${_TargetModules_${module}_LIBRARIES})
-  endforeach(module)
+      target_include_directories(${target} ${scope} ${_TargetModules_${module}_INCLUDE_DIRS})
+      target_compile_options(${target} ${scope} ${_TargetModules_${module}_CFLAGS})
+      target_link_libraries(${target} ${_TargetModules_${module}_LIBRARIES})
+    endforeach(module)
+  endforeach()
+
 endfunction()
